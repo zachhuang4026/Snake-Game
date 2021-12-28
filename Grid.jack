@@ -1,0 +1,121 @@
+class Grid {
+    field Game game;
+    field int sizeX, sizeY; // grid position
+    field int foodX, foodY; // food position
+
+    // grid = [[], [], []] 2D array to store x, y position
+    field Array grid;
+
+    // creates a new Grid given a pixel size
+    constructor Grid new(Game Agame, int Ax, int Ay) {
+
+        let game = Agame;
+        let sizeX = Ax / 4;
+        let sizeY = (Ay-16) / 4;
+
+        // initialize the grid
+        do initGrid();
+
+        return this;
+
+    }
+
+    // draw keyboard instruction
+    method void drawInstruction() {
+        var String tString;
+
+        //do Output.moveCursor(22, 12);
+        let tString = "q:EXIT";
+        do Output.printString(tString);
+        do tString.dispose();
+        return;
+
+    }
+
+    // radom select position to draw food
+    method void placeFood() {
+
+        var int randX, randY;
+
+        let randX = Random.randRange(sizeX);
+        let randY = Random.randRange(sizeY);
+
+
+        let foodX = randX;
+        let foodY = randY;
+
+        return;
+
+    }
+
+    // draw food
+    method void drawFood() {
+
+        do Screen.setColor(true);
+        // draw a circle as the food
+        do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
+
+        return;
+    }
+
+    
+
+    // initializes the grid
+    method void initGrid() {
+
+        var int curX, curY;
+        var Array xGrid;
+
+        let grid = Array.new(sizeX);
+        let curX = 0;
+
+        while( curX < sizeX ) {
+            let xGrid = Array.new(sizeY);
+            let curY = 0;
+            while( curY < sizeY ) {
+                let xGrid[curY] = false;
+                let curY = curY + 1;
+            }
+            let grid[curX] = xGrid;
+            let curX = curX + 1;
+        }
+
+        do Screen.setColor(true);
+
+        return;
+
+    }
+
+    
+    method int getSizeX() {
+        return sizeX;
+    }
+    method int getSizeY() {
+        return sizeY;
+    }
+    method int getFoodX() {
+        return foodX;
+    }
+    method int getFoodY() {
+        return foodY;
+    }
+
+    // method to avoid snake and food draw at the same position
+    method void setOccupied(int x, int y, boolean occupied) {
+        var Array xGrid;
+        let xGrid = grid[x];
+        let xGrid[y] = occupied;
+        return;
+    }
+
+    method boolean checkOccupied(int x, int y) {
+        var Array xGrid;
+        let xGrid = grid[x];
+        if( xGrid[y] ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}

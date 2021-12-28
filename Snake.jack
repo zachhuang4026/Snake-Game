@@ -1,0 +1,200 @@
+class Snake {
+
+    field Game game;
+    field int posX, posY;
+    field int length;
+
+
+    // how much the snake has left to grow
+    field int togrow; 
+
+    // the direction (0=none,1=up,2=down,3=left,4=right)
+    field int dir, lastdir;
+
+    // store Snake move in to array, in order
+    // to get the relative direction when user press keyboard
+    field Array histX, histY;
+    field int histSize;
+
+    // new Snake
+    // Agame: new game
+    // Ax: snake head x position
+    // Ay: snake head y position
+    // Alen: snake initial length
+    constructor Snake new(Game Agame, int Ax, int Ay, int Alen) {
+
+        var Grid grid;
+        var int i;
+        var int round;
+
+        let game = Agame;
+        let posX = Ax - Alen;
+        let posY = Ay;
+        let length = Alen;
+
+        let togrow = 0; // initilaze as 0 when game start
+        let dir = 4;
+        let lastdir = 4;
+
+        // initialize the size of array
+        let histSize = 200;
+        let histX = Array.new(histSize);
+        let histY = Array.new(histSize);
+
+        let grid = game.getGrid();
+        let i = 0;
+        
+        while( i < length ) {
+            let round = game.getround();
+
+            let posX = posX + 1; //the new position for Snake head
+
+            // draw the new snake
+            do Screen.setColor(true);
+            do Screen.drawRectangle( posX*4, posY*4, (posX*4)+4, (posY*4)+4 );
+            do grid.setOccupied(posX, posY, true);
+
+            // store into the history
+            let histX[round] = posX;
+            let histY[round] = posY;
+
+            let i = i + 1;
+            do game.nextround();
+        }
+
+        return this;
+
+    }
+
+
+
+    // sets the snake's direction
+    method void setDir(int newdir) {
+        let dir = newdir;
+        return;
+    }
+
+    // copies dir to lastdir
+    method void updateDir() {
+        let lastdir = dir;
+        return;
+    }
+
+    // snake eat food then grow its length
+    method void eatFood() {
+        let togrow = togrow + 2; // after eat food, grow += 2
+        return;
+    }
+
+    // checks whether the snake collides to the walls
+    method boolean tryMove() {
+
+        var Grid grid;
+        let grid = game.getGrid();
+
+    
+        if( dir = 1 ) {
+            // up
+            if( posY = 0 ) {
+                return false;
+            }
+            else {
+                let posY = posY - 1;
+            }
+        }
+        if( dir = 2 ) {
+            // down
+            if( posY = grid.getSizeY() ) {
+                return false;
+            }
+            else {
+                let posY = posY + 1;
+            }
+        }
+        if( dir = 3 ) {
+            // left
+            if( posX = 0 ) {
+               return false;
+           }
+            else {
+                let posX = posX - 1;
+            }
+        }
+        if( dir = 4 ) {
+            // right
+            if( posX = grid.getSizeX() ) {
+                return false;
+            }
+            else {
+                let posX = posX + 1;
+            }
+        }
+
+        // check whether snake hit itself
+        if( grid.checkOccupied(posX, posY) ) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    // makes the snake grow
+    method void grow(int round) {
+
+        // draw the new head
+        var Grid grid;
+        var int tailIndex, tailX, tailY;
+
+        let grid = game.getGrid();
+        
+        // draw the new snake
+        do Screen.setColor(true);
+        do Screen.drawRectangle( posX*4, posY*4, (posX*4)+4, (posY*4)+4 );
+        do grid.setOccupied(posX, posY, true);
+
+        // store into the history
+        let histX[round] = posX;
+        let histY[round] = posY;
+
+
+        // does the snake have some growing to do?
+        if( togrow > 0 ) {
+            let togrow = togrow - 1;
+            let length = length + 1;
+        }
+        // clear the old tail
+        else {
+            let tailIndex = round - length;
+            let tailX = histX[tailIndex];
+            let tailY = histY[tailIndex];
+
+            // draw the growing part on tail
+            do Screen.setColor(false);
+            do Screen.drawRectangle( tailX*4, tailY*4, (tailX*4)+4, (tailY*4)+4 );
+            do grid.setOccupied(tailX, tailY, false);
+        }
+
+        return;
+
+    }
+
+    // gets the snake's information
+    method int posX() {
+        return posX;
+    }
+    method int posY() {
+        return posY;
+    }
+    method int getLength() {
+        return length;
+    }
+    method int getDir() {
+        return dir;
+    }
+    method int getLastDir() {
+        return lastdir;
+    }
+
+
+}

@@ -1,0 +1,140 @@
+class Game {
+
+    field Snake snake;
+    field Grid grid;
+    field int round; 
+
+    // creates a new Game
+    constructor Game new() {
+        do Random.setSeed(RandSeed.getSeed()); // set up random seed
+
+        let round = 0; // initialize new game
+
+        let grid = Grid.new(this, 512, 256); // Hack's screen is 512x256
+
+        // Snake parameter
+        // Agame: new game
+        // Ax: snake head x position
+        // Ay: snake head y position
+        // Alen: snake initial length
+        let snake = Snake.new(this, grid.getSizeX()/2, grid.getSizeY()/2, 2);
+
+        do grid.drawInstruction();
+
+        // initialize food
+        do grid.placeFood();
+
+        return this;
+
+    }
+
+
+    // start the game
+    method void start() {
+        var boolean exit;
+        var int key;
+        let exit = false;
+
+        // while loop until user press exit
+        while(~exit) {
+            
+            do snake.updateDir();
+
+            // get user keyboard input
+            let key = Keyboard.keyPressed();
+
+
+            // if user press q to exit
+            if( key = 81 ) {
+                let exit = true;
+            }
+
+            // go left
+            if(key = 130) {
+                if( snake.getLastDir() = 1 ) {
+                    do snake.setDir(3);
+                }
+                if( snake.getLastDir() = 2 ) {
+                    do snake.setDir(3);
+                }
+            }
+
+            // go up
+            if(key = 131) {
+                if( snake.getLastDir() = 3 ) {
+                    do snake.setDir(1);
+                }
+                if( snake.getLastDir() = 4 ) {
+                    do snake.setDir(1);
+                }
+            }
+
+            // go right
+            if( key = 132 ) {
+                if( snake.getLastDir() = 1 ) {
+                    do snake.setDir(4);
+                }
+                if( snake.getLastDir() = 2 ) {
+                    do snake.setDir(4);
+                }
+            }
+            // go down
+            if( key = 133 ) {
+                // down arrow, valid only if we were going left or right
+                if( snake.getLastDir() = 3 ) {
+                    do snake.setDir(2);
+                }
+                if( snake.getLastDir() = 4 ) {
+                    do snake.setDir(2);
+                }
+            }
+
+
+            // try to move one square in the current direction
+            if( ~ snake.tryMove() ) {
+                do Sys.halt();
+            }
+
+            // food been eaten
+            // check eaten food position equals to snake position
+
+            if (snake.posX() = grid.getFoodX() & snake.posY() = grid.getFoodY()) {
+                do snake.eatFood();
+                do grid.placeFood();
+            }
+
+            // snake grow 
+            do snake.grow(round);
+
+            // if snake get the food, redraw the food and system wait for 50 milliseconds
+            do grid.drawFood();
+            do Sys.wait(50);
+            do nextround();
+
+        }
+
+        do Sys.halt();
+
+        return;
+
+    }
+
+
+    // increment the round count by 1
+    method int nextround() {
+        let round = round + 1;
+        return round;
+    }
+
+    // reader methods
+    method Grid getGrid() {
+        return grid;
+    }
+    method Snake getSnake() {
+        return snake;
+    }
+    method int getround() {
+        return round;
+    }
+
+}
